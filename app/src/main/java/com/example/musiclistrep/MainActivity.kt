@@ -12,10 +12,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.recycler.adapter = MusicAdapter(
-            listOf(
-                Music(resources.getResourceName(R.raw.dragonborn).substringAfterLast("/").substringBeforeLast("."),R.raw.dragonborn),
-            )
-        )
+        val rawResources = mutableListOf<Int>()
+        val fields = R.raw::class.java.fields
+        for (field in fields) {
+            try {
+                rawResources.add(field.getInt(null))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        val musicList = rawResources.map { resourceId ->
+            val resourceName = resources.getResourceEntryName(resourceId)
+            Music(resourceName, resourceId)
+        }
+
+        binding.recycler.adapter = MusicAdapter(musicList)
     }
 }
